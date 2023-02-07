@@ -1,8 +1,8 @@
 const inputPath = "icons";
 const outputPath = "dst";
 
-// ==== GET FILES ==== 
-const svgList: Record<string, Record<string, Record<string, string>>> = {};
+// read files
+const svgList: Map<string, Map<string, Map<string, string>>> = new Map;
 const promises: Promise<void>[] = [];
 for await (const versionEntry of Deno.readDir(inputPath)) {
 	if (!versionEntry.isDirectory) continue;
@@ -10,7 +10,7 @@ for await (const versionEntry of Deno.readDir(inputPath)) {
 	const version = versionEntry.name;
 	const versionPath = inputPath + "/" + version;
 
-	svgList[version] = {};
+	svgList.set(version, new Map);
 
 	for await (const iconSetEntry of Deno.readDir(versionPath)) {
 		if (!iconSetEntry.isDirectory) continue;
@@ -18,7 +18,7 @@ for await (const versionEntry of Deno.readDir(inputPath)) {
 		const iconSet = iconSetEntry.name;
 		const iconSetPath = versionPath + "/" + iconSet;
 
-		svgList[version][iconSet] = {};
+		svgList.get(version)!.set(iconSet, new Map);
 		
 		for await (const iconEntry of Deno.readDir(iconSetPath)) {
 			if (!iconEntry.isFile) continue;
@@ -27,14 +27,15 @@ for await (const versionEntry of Deno.readDir(inputPath)) {
 			const iconPath = iconSetPath + "/" + iconEntry.name;
 
 			promises.push(Deno.readTextFile(iconPath).then((text) => {
-				const stripped = text.replace(/<!--[\s\S]*?-->/g, "");
-				svgList[version][iconSet][icon] = stripped;
+				const cleanedText = text.replace(/<!--[\s\S]*?-->/g, "");
+				svgList.get(version)!.get(iconSet)!.set(icon, cleanedText);
 			}));
 		}
 	}
 }
 await Promise.all(promises);
 
+// generate files
 const files = new Map<string, string>();
 const filePath = outputPath + "/index.js";
 const declarationPath = outputPath + "/index.d.ts";
@@ -42,9 +43,9 @@ const declarationPath = outputPath + "/index.d.ts";
 let fileText = "// Icons provided by Font Awesome at https://fontawesome.com/\n";
 let declarationText = fileText;
 
-for (const [version, iconSets] of Object.entries(svgList)) {
-	for (const [iconSet, icons] of Object.entries(iconSets)) {
-		for (const [icon, svg] of Object.entries(icons)) {
+for (const [version, iconSets] of svgList) {
+	for (const [iconSet, icons] of iconSets) {
+		for (const [icon, svg] of icons) {
 			const iconCamelCase = icon
 			.replace(/\.svg$/, "")
 			.replace(/-([a-z])/g, (g) => g[1].toUpperCase())
