@@ -1,0 +1,24 @@
+{
+	"name": "fontawesome-svgs",
+	"version": "1.0.0",
+	"description": "A tree-shakable library that exports fontawesome SVGs as strings.",
+	"main": "dst/index.js",
+	"type": "module",
+	"files": [
+		"./dst/**"
+	],
+	"scripts": {
+		"build": "deno run --allow-read=icons --allow-write=dst main.ts"
+	},
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/TheCymaera/fontawesome-svgs"
+	},
+	"keywords": [
+		"fontawesome",
+		"icons",
+		"svg"
+	],
+	"author": "Cymaera",
+	"license": "MIT"
+}

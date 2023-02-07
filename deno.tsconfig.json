@@ -1,0 +1,18 @@
+{
+	"include": "main.ts",
+	"compilerOptions": {
+		"module": "ESNext",
+		"target": "ESNext",
+		
+		"strictNullChecks": true,
+		"noUncheckedIndexedAccess": true,
+		"noImplicitThis": true,
+		"noImplicitReturns": true,
+		"alwaysStrict": true,
+
+		"declaration": true,
+		"preserveConstEnums": true,
+
+		"skipDefaultLibCheck": true
+	}
+}
