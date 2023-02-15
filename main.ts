@@ -27,8 +27,7 @@ for await (const versionEntry of Deno.readDir(inputPath)) {
 			const iconPath = iconSetPath + "/" + iconEntry.name;
 
 			promises.push(Deno.readTextFile(iconPath).then((text) => {
-				const cleanedText = text.replace(/<!--[\s\S]*?-->/g, "");
-				svgList.get(version)!.get(iconSet)!.set(icon, cleanedText);
+				svgList.get(version)!.get(iconSet)!.set(icon, text);
 			}));
 		}
 	}
@@ -50,10 +49,14 @@ for (const [version, iconSets] of svgList) {
 			.replace(/\.svg$/, "")
 			.replace(/-([a-z])/g, (g) => g[1].toUpperCase())
 			.replaceAll("-", "");
+
+			const svgCleaned = svg
+			.replace(/<!--[\s\S]*?-->/g, "")
+			.replace("<svg", `<svg class="${version}"`);
 			
 			const variableName = `${version}_${iconSet}_${iconCamelCase}`;
 
-			fileText += `export const ${variableName} = \`${svg}\`;\n`;
+			fileText += `export const ${variableName} = \`${svgCleaned}\`;\n`;
 			declarationText += `export const ${variableName}: string;\n`;
 		}
 	}
