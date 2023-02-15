@@ -1,6 +1,6 @@
 {
 	"name": "fontawesome-svgs",
-	"version": "1.0.1",
+	"version": "1.0.2",
 	"description": "A tree-shakable library that exports fontawesome SVGs as strings.",
 	"main": "dst/index.js",
 	"type": "module",

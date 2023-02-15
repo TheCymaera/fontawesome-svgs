@@ -39,8 +39,13 @@ const files = new Map<string, string>();
 const filePath = outputPath + "/index.js";
 const declarationPath = outputPath + "/index.d.ts";
 
-let fileText = "// Icons provided by Font Awesome at https://fontawesome.com/\n";
-let declarationText = fileText;
+let declarationText = `// Icons provided by Font Awesome at https://fontawesome.com/\n`;
+let fileText = `// Icons provided by Font Awesome at https://fontawesome.com/
+const i = (v, p) => \`<svg style="fill: currentColor; height: 1em; display: inline-block; vertical-align: text-bottom;" xmlns="http://www.w3.org/2000/svg" viewBox="\${v}"><path d="\${p}"/></svg>\`
+`;
+
+
+
 
 for (const [version, iconSets] of svgList) {
 	for (const [iconSet, icons] of iconSets) {
@@ -51,12 +56,14 @@ for (const [version, iconSets] of svgList) {
 			.replaceAll("-", "");
 
 			const svgCleaned = svg
-			.replace(/<!--[\s\S]*?-->/g, "")
-			.replace("<svg", `<svg class="${version}"`);
+			.replace(/<!--[\s\S]*?-->/g, "");
+
+			const v = svgCleaned.match(/viewBox="([^"]+)"/)![1];
+			const p = svgCleaned.match(/d="([^"]+)"/)![1];
 			
 			const variableName = `${version}_${iconSet}_${iconCamelCase}`;
 
-			fileText += `export const ${variableName} = \`${svgCleaned}\`;\n`;
+			fileText += `export const ${variableName} = i(\`${v}\`,\`${p}\`);\n`;
 			declarationText += `export const ${variableName}: string;\n`;
 		}
 	}
